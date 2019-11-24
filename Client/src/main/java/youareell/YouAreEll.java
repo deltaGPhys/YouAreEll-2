@@ -44,6 +44,15 @@ public class YouAreEll {
         idCtrl.printMessages(idCtrl.getIds());
     }
 
+    public void putOrPostId(String name, String gHname) throws JsonProcessingException {
+        if (idCtrl.getIdByGH(gHname) == null) { // add to remote
+            Id id = new Id(name,gHname);
+            idCtrl.postId(id);
+        } else { // already exists - put instead
+
+        }
+    }
+
     public void view_all_messages() throws JsonProcessingException {
         msgCtrl.printMessages(msgCtrl.getMessages());
     }
@@ -54,6 +63,9 @@ public class YouAreEll {
                 case "GET":
                     System.out.println("********************" + mainurl + "********************");
                     return TransactionController.getInstance().get(mainurl);
+                case "POST":
+                    System.out.println("********************" + mainurl + "********************");
+                    return TransactionController.getInstance().post(mainurl,jpayload);
             }
         } catch (IOException e) {
             return e.getMessage();

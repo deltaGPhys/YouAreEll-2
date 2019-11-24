@@ -10,6 +10,7 @@ import java.util.List;
 import controllers.IdController;
 import controllers.MessageController;
 import controllers.TransactionController;
+import models.Id;
 import youareell.YouAreEll;
 
 // Simple Shell is a Console view for youareell.YouAreEll.
@@ -25,6 +26,8 @@ public class SimpleShell {
         //TransactionController.getInstance().get();
 
         YouAreEll webber = YouAreEll.getInstance();
+        IdController idC = IdController.getInstance();
+        MessageController msgC = MessageController.getInstance();
         
         String commandLine;
         BufferedReader console = new BufferedReader
@@ -57,7 +60,7 @@ public class SimpleShell {
                 list.add(commands[i]);
 
             }
-            System.out.print(list); //***check to see if list was added correctly***
+            System.out.println(list); //***check to see if list was added correctly***
             history.addAll(list);
             try {
                 //display history of shell with index
@@ -71,13 +74,38 @@ public class SimpleShell {
 
                 // ids
                 if (list.contains("ids")) {
-                    webber.view_all_ids();
+                    if (list.size() == 1) {
+                        // "ids"
+                        System.out.println("print ids");
+                        webber.view_all_ids();
+                    } else {
+                        if (list.size() == 3 && list.get(1) == "setCurrent") {
+                            // set current user for msgController
+                            Id id = idC.getIdByName(list.get(2));
+                            if (id != null) {
+                                idC.setMyId(id);
+                                System.out.println("ID set");
+                            } else {
+                                System.out.println("ID not found\n");
+                            }
+
+                        } else if (list.size() == 3) {
+                            // "ids <name> <gHname>"
+                            String name = list.get(1);
+                            String gHname = list.get(2);
+                            webber.putOrPostId(name,gHname);
+
+                        } else if (list.size() == 2) {
+                            // "ids <name>" - get user
+                        }
+                    }
+
                     continue;
                 }
 
                 // messages
                 if (list.contains("messages")) {
-                   webber.view_all_messages();
+                    webber.view_all_messages();
                     continue;
                 }
                 // you need to add a bunch more.
@@ -114,6 +142,7 @@ public class SimpleShell {
 
             //catch ioexception, output appropriate message, resume waiting for input
             catch (IOException e) {
+                e.printStackTrace();
                 System.out.println("Input Error, Please try again!");
             }
             // So what, do you suppose, is the meaning of this comment?

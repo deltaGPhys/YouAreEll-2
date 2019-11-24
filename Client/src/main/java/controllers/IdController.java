@@ -12,6 +12,7 @@ import views.MessageTextView;
 import youareell.YouAreEll;
 
 public class IdController {
+
     private Id myId;
     private ArrayList<Id> storedIds;
     private static final IdController INSTANCE = new IdController();
@@ -19,6 +20,7 @@ public class IdController {
     private IdController() {
         this.storedIds = new ArrayList<Id>();
         this.myId = null;
+
     }
 
     public static IdController getInstance() {
@@ -41,9 +43,18 @@ public class IdController {
         }
     }
 
-    public Id getId(String gitHubId) {
+    public Id getIdByGH(String gitHubId) {
         for (Id i : storedIds) {
             if (i.getGitHubId().equals(gitHubId)) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    public Id getIdByName(String name) {
+        for (Id i : storedIds) {
+            if (i.getName().equals(name)) {
                 return i;
             }
         }
@@ -58,9 +69,13 @@ public class IdController {
         return myId;
     }
 
-    public Id postId(Id id) {
-        storedIds.add(id);
-        return id;
+    public Id postId(Id id) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonData = mapper.writeValueAsString(id);
+        String response = YouAreEll.getInstance().MakeURLCall("/ids", "POST", jsonData);
+        System.out.println("response: "+response);
+        getIds();
+        return getIdByGH(id.getGitHubId());
     }
 
     public Id putId(Id id) {
@@ -71,6 +86,7 @@ public class IdController {
             }
         }
         return null;
+        // need to put to server
     }
  
 }
