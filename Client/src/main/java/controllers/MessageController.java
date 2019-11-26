@@ -27,34 +27,25 @@ public class MessageController {
         this.allMessages = new ArrayList<>();
     }
 
-    public ArrayList<Message> getMessages() throws JsonProcessingException {
-        return getMessages(-1, ""); // for all msgs
-    }
-
-    public ArrayList<Message> getMessages(String gitHubId) throws JsonProcessingException {
-        return getMessages(-1,gitHubId);
+    public Id checkId(String githubId) {
+        Id toId = null;
+        if (!githubId.equals("")) {
+            toId = idController.getIdByGH(githubId);
+        }
+        return toId;
     }
 
     public ArrayList<Message> getMessages(int numMsgs, String githubId) throws JsonProcessingException {
         getAllMessages();
+        if (checkId(githubId) == null) {return new ArrayList<Message>();}
 
-        Id toId = null;
-        if (!githubId.equals("")) {
-            toId = idController.getIdByGH(githubId);
-            if (toId == null) {
-                return new ArrayList<Message>();
-            }
-        }
-
-        ArrayList<Message> results = new ArrayList<>();
-
-        for (Message message : this.allMessages) {
-            if (githubId.equals("") || toId.getGitHubId().equals(message.getToid())) {
-                results.add(message);
-            }
-        }
+        ArrayList<Message> results = filterById(githubId);
         Collections.sort(results);
 
+        return trimMessageList(numMsgs,results);
+    }
+
+    public ArrayList<Message> trimMessageList(int numMsgs, ArrayList<Message> results) {
         if (numMsgs > 0) {
             return new ArrayList<Message>(results.subList(0, Math.min(results.size(),numMsgs)));
         } else {
@@ -62,7 +53,17 @@ public class MessageController {
         }
     }
 
-    public void getAllMessages() throws JsonProcessingException {
+    public ArrayList<Message> filterById (String gitHubId) {
+        ArrayList<Message> results = new ArrayList<>();
+        for (Message message : this.allMessages) {
+            if (gitHubId.equals("") || gitHubId.equals(message.getToid())) {
+                results.add(message);
+            }
+        }
+        return results;
+    }
+
+    public ArrayList<Message> getAllMessages() throws JsonProcessingException {
         idController.getIds();
         this.allMessages.clear();
 
@@ -73,23 +74,18 @@ public class MessageController {
         for (Message message : messages) {
             this.allMessages.add(message);
         }
+
+        return this.allMessages;
     }
 
-    public void printMessages(ArrayList<Message> messages) {
+    public String printMessages(ArrayList<Message> messages) {
+        String output = "";
         for (Message message: messages) {
-            System.out.println(new MessageTextView(message).toString());
+            output += new MessageTextView(message).toString();
         }
+        return output;
     }
 
-    public ArrayList<Message> getMessagesForId(Id id) {
-        ArrayList<Message> messagesFound = new ArrayList<>();
-        for (Message m : this.allMessages) {
-            if (m.getToid().equals(id)) {
-                messagesFound.add(m);
-            }
-        }
-        return messagesFound;
-    }
     public Message getMessageForSequence(String seq) {
         for (Message m : this.allMessages) {
             if (m.getSequence().equals(seq)) {

@@ -1,15 +1,12 @@
 package youareell;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.*;
 import models.Id;
-import models.Message;
 import views.IdTextView;
 import views.MessageTextView;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class YouAreEll {
 
@@ -22,23 +19,18 @@ public class YouAreEll {
         this.idCtrl = new IdController(this.transCtrl);
         this.msgCtrl = new MessageController(this.idCtrl, this.transCtrl);
     }
-//
-//    public IdController getIdController() {
-//        return idCtrl;
-//    }
 
-//    public static void main(String[] args) throws JsonProcessingException {
-//        YouAreEll urlhandler = new YouAreEll();
-//
-//        ArrayList<Id> ids = urlhandler.idCtrl.getIds();
-//        for (Id id: ids) {
-//            System.out.println(new IdTextView(id).toString());
-//        }
-//        ArrayList<Message> messages = urlhandler.msgCtrl.getMessages();
-//        for (Message message: messages) {
-//            System.out.println(new MessageTextView(message).toString());
-//        }
-//    }
+    public MessageController getMsgCtrl() {
+        return msgCtrl;
+    }
+
+    public IdController getIdCtrl() {
+        return idCtrl;
+    }
+
+    public TransactionController getTransCtrl() {
+        return transCtrl;
+    }
 
     public String setMyId(String gHName) {
         Id thisId = idCtrl.getIdByGH(gHName);
@@ -50,8 +42,8 @@ public class YouAreEll {
         }
     }
 
-    public void view_all_ids() throws JsonProcessingException {
-        idCtrl.printMessages(idCtrl.getIds());
+    public String view_all_ids() throws JsonProcessingException {
+        return idCtrl.printIds(idCtrl.getIds());
     }
 
     public void putOrPostId(String name, String gHname) throws JsonProcessingException {
@@ -65,12 +57,12 @@ public class YouAreEll {
         }
     }
 
-    public void view_all_messages() throws JsonProcessingException {
-        msgCtrl.printMessages(msgCtrl.getMessages(20,""));
+    public String view_all_messages() throws JsonProcessingException {
+        return msgCtrl.printMessages(msgCtrl.getMessages(20,""));
     }
 
-    public void view_messages_to_user(String githubId) throws JsonProcessingException {
-        msgCtrl.printMessages(msgCtrl.getMessages(20,githubId));
+    public String view_messages_to_user(String githubId) throws JsonProcessingException {
+        return msgCtrl.printMessages(msgCtrl.getMessages(20,githubId));
     }
 
     public String get_id(String gHname) {

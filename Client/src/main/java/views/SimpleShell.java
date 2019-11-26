@@ -74,7 +74,7 @@ public class SimpleShell {
                     if (list.size() == 1) {
                         // "ids"
                         System.out.println("******************** IDs Found ********************");
-                        webber.view_all_ids();
+                        System.out.println(webber.view_all_ids());
                         System.out.println("***************************************************");
 
                     } else {
@@ -102,13 +102,13 @@ public class SimpleShell {
                     if (list.size() == 1) {
                         // "messages"
                         System.out.println("**************** Last 20 Messages *****************");
-                        webber.view_all_messages();
+                        System.out.println(webber.view_all_messages());
                         System.out.println("***************************************************");
 
                     } else {
                         if (list.size() == 2) {
                             System.out.println(String.format("************** Messages to %s *************\");", list.get(1)));
-                            webber.view_messages_to_user(list.get(1));
+                            System.out.println(webber.view_messages_to_user(list.get(1)));
                             System.out.println("***************************************************");
                         }
                     }

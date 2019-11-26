@@ -30,24 +30,17 @@ public class IdController {
         return new ArrayList<Id>(this.storedIds);
     }
 
-    public void printMessages(ArrayList<Id> ids) {
+    public String printIds(ArrayList<Id> ids) {
+        String output = "";
         for (Id id : ids) {
-            System.out.println(new IdTextView(id).toString());
+            output += new IdTextView(id).toString();
         }
+        return output;
     }
 
     public Id getIdByGH(String gitHubId) {
         for (Id i : storedIds) {
             if (i.getGitHubId().equals(gitHubId)) {
-                return i;
-            }
-        }
-        return null;
-    }
-
-    public Id getIdByName(String name) {
-        for (Id i : storedIds) {
-            if (i.getName().equals(name)) {
                 return i;
             }
         }
