@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import controllers.IdController;
@@ -23,11 +24,7 @@ public class SimpleShell {
         System.out.println(output);
     }
     public static void main(String[] args) throws java.io.IOException {
-        //TransactionController.getInstance().get();
-
-        YouAreEll webber = YouAreEll.getInstance();
-        IdController idC = IdController.getInstance();
-        MessageController msgC = MessageController.getInstance();
+        YouAreEll webber = new YouAreEll();
         
         String commandLine;
         BufferedReader console = new BufferedReader
@@ -76,19 +73,15 @@ public class SimpleShell {
                 if (list.contains("ids")) {
                     if (list.size() == 1) {
                         // "ids"
-                        System.out.println("print ids");
+                        System.out.println("******************** IDs Found ********************");
                         webber.view_all_ids();
-                    } else {
-                        if (list.size() == 3 && list.get(1) == "setCurrent") {
-                            // set current user for msgController
-                            Id id = idC.getIdByName(list.get(2));
-                            if (id != null) {
-                                idC.setMyId(id);
-                                System.out.println("ID set");
-                            } else {
-                                System.out.println("ID not found\n");
-                            }
+                        System.out.println("***************************************************");
 
+                    } else {
+
+                        if (list.size() == 3 && list.get(1).equals("setCurrent")) {
+                            // set current user for msgController
+                            System.out.println(webber.setMyId(list.get(2)));
                         } else if (list.size() == 3) {
                             // "ids <name> <gHname>"
                             String name = list.get(1);
@@ -97,6 +90,7 @@ public class SimpleShell {
 
                         } else if (list.size() == 2) {
                             // "ids <name>" - get user
+                            System.out.println(webber.get_id(list.get(1)));
                         }
                     }
 
@@ -105,11 +99,42 @@ public class SimpleShell {
 
                 // messages
                 if (list.contains("messages")) {
-                    webber.view_all_messages();
+                    if (list.size() == 1) {
+                        // "messages"
+                        System.out.println("**************** Last 20 Messages *****************");
+                        webber.view_all_messages();
+                        System.out.println("***************************************************");
+
+                    } else {
+                        if (list.size() == 2) {
+                            System.out.println(String.format("************** Messages to %s *************\");", list.get(1)));
+                            webber.view_messages_to_user(list.get(1));
+                            System.out.println("***************************************************");
+                        }
+                    }
                     continue;
                 }
-                // you need to add a bunch more.
+                // send messages
+                if (list.get(0).equals("send") && collapseMessageInList(new ArrayList<String>(list)).size()<list.size()) {
+                    list = collapseMessageInList(new ArrayList<String>(list));
+                    if (list.size() == 2) {
+                        // "send 'message'"
+                        System.out.println(webber.sendMessage(list.get(1)));
+                    } else if (list.size() == 3 && !list.contains("to")) {
+                        // "send <yourId> 'message'"
+                        System.out.println(webber.sendMessage(list.get(1),list.get(2)));
 
+                    } else {
+                        if (list.size() == 4 && list.get(2).equals("to")) {
+                            // "send 'message' to <recip>"
+                            System.out.println(webber.sendMessage("",list.get(3),list.get(1)));
+                        } else if (list.size() == 5 && list.get(3).equals("to")) {
+                            // "send <yourId> 'message' to <recip>"
+                            System.out.println(webber.sendMessage(list.get(1),list.get(4),list.get(2)));
+                        }
+                    }
+                    continue;
+                }
                 //!! command returns the last command in history
                 if (list.get(list.size() - 1).equals("!!")) {
                     pb.command(history.get(history.size() - 2));
@@ -153,10 +178,35 @@ public class SimpleShell {
              * 4. obtain the output stream
              * 5. output the contents returned by the command
              */
+        }
+    }
 
+    public static ArrayList<String> collapseMessageInList (ArrayList<String> list) {
+        int firstApostropheTerm = -1;
+        int secondApostropheTerm = -1;
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).matches("^'.*$")) {
+                firstApostropheTerm = i;
+                break;
+            }
+        }
+        for (int i = list.size()-1; i >= 0; i--) {
+            if (list.get(i).matches("^.*'$") ) {
+                secondApostropheTerm = i;
+                break;
+            }
+        }
+        if (firstApostropheTerm < 0 || secondApostropheTerm < 0 || secondApostropheTerm < firstApostropheTerm) {
+            return list;
         }
 
-
+        String message = String.join(" ",list.subList(firstApostropheTerm,secondApostropheTerm+1));
+        message = message.replace("'","").trim();
+        for (int i = firstApostropheTerm; i < secondApostropheTerm; i++ ){
+            list.remove(firstApostropheTerm);
+        }
+        list.set(firstApostropheTerm,message);
+        return list;
     }
 
 }

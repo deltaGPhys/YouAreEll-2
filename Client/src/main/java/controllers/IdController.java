@@ -1,35 +1,28 @@
 package controllers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import models.Id;
-import models.Message;
 import views.IdTextView;
-import views.MessageTextView;
-import youareell.YouAreEll;
 
 public class IdController {
 
     private Id myId;
     private ArrayList<Id> storedIds;
-    private static final IdController INSTANCE = new IdController();
+    private TransactionController transactionController;
 
-    private IdController() {
+    public IdController(TransactionController transactionController) throws JsonProcessingException {
         this.storedIds = new ArrayList<Id>();
         this.myId = null;
-
-    }
-
-    public static IdController getInstance() {
-        return INSTANCE;
+        this.transactionController = transactionController;
+        getIds();
     }
 
     public ArrayList<Id> getIds() throws JsonProcessingException {
-        String result = YouAreEll.getInstance().MakeURLCall("/ids", "GET", "");
+        String result = transactionController.MakeURLCall("/ids", "GET", "");
         ObjectMapper mapper = new ObjectMapper();
+        this.storedIds.clear();
         Id[] ids = mapper.readValue(result, Id[].class);
         for (Id id : ids) {
             this.storedIds.add(id);
@@ -72,21 +65,19 @@ public class IdController {
     public Id postId(Id id) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         String jsonData = mapper.writeValueAsString(id);
-        String response = YouAreEll.getInstance().MakeURLCall("/ids", "POST", jsonData);
+        String response = transactionController.MakeURLCall("/ids", "POST", jsonData);
         System.out.println("response: "+response);
         getIds();
         return getIdByGH(id.getGitHubId());
     }
 
-    public Id putId(Id id) {
-        for (Id i : storedIds) {
-            if (i.getGitHubId().equals(id.getGitHubId())) {
-                i.setName(id.getName());
-                return i;
-            }
-        }
-        return null;
-        // need to put to server
+    public Id putId(Id id) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonData = mapper.writeValueAsString(id);
+        String response = transactionController.MakeURLCall("/ids", "PUT", jsonData);
+        System.out.println("response: "+response);
+        getIds();
+        return getIdByGH(id.getGitHubId());
     }
  
 }

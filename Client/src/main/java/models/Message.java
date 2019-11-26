@@ -5,7 +5,7 @@ import java.util.Date;
 /*
  * POJO for an Message object
  */
-public class Message {
+public class Message implements Comparable<Message>{
     private String sequence;
     private Date timestamp;
     private String fromid;
@@ -23,44 +23,32 @@ public class Message {
         this.timestamp = timestamp;
     }
 
-    public String getMessage() {
-        return message;
+    public Message (String fromid, String toId, String message) {
+        this.message = message;
+        this.fromid = fromid;
+        this.toid = toId;
+        this.sequence = "-";
+        this.timestamp = null;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public String getMessage() {
+        return message;
     }
 
     public String getFromid() {
         return fromid;
     }
 
-    public void setFromid(String fromid) {
-        this.fromid = fromid;
-    }
-
     public String getToid() {
         return toid;
-    }
-
-    public void setToid(String toid) {
-        this.toid = toid;
     }
 
     public String getSequence() {
         return sequence;
     }
 
-    public void setSequence(String sequence) {
-        this.sequence = sequence;
-    }
-
     public Date getTimestamp() {
         return timestamp;
-    }
-
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
     }
 
     @Override
@@ -72,5 +60,9 @@ public class Message {
                 ", toid='" + toid + '\'' +
                 ", message='" + message + '\'' +
                 '}';
+    }
+
+    public int compareTo(Message message2) {
+        return this.timestamp.compareTo(message2.timestamp);
     }
 }
