@@ -29,15 +29,13 @@ public class MessageController {
 
     public Id checkId(String githubId) {
         Id toId = null;
-        if (!githubId.equals("")) {
-            toId = idController.getIdByGH(githubId);
-        }
+        toId = idController.getIdByGH(githubId);
         return toId;
     }
 
     public ArrayList<Message> getMessages(int numMsgs, String githubId) throws JsonProcessingException {
         getAllMessages();
-        if (checkId(githubId) == null) {return new ArrayList<Message>();}
+        if (checkId(githubId) == null && !githubId.equals("")) {return new ArrayList<Message>();}
 
         ArrayList<Message> results = filterById(githubId);
         Collections.sort(results);

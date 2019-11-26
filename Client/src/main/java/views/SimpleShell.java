@@ -107,7 +107,7 @@ public class SimpleShell {
 
                     } else {
                         if (list.size() == 2) {
-                            System.out.println(String.format("************** Messages to %s *************\");", list.get(1)));
+                            System.out.println(String.format("************** Messages to %s **************", list.get(1)));
                             System.out.println(webber.view_messages_to_user(list.get(1)));
                             System.out.println("***************************************************");
                         }
@@ -115,7 +115,7 @@ public class SimpleShell {
                     continue;
                 }
                 // send messages
-                if (list.get(0).equals("send") && collapseMessageInList(new ArrayList<String>(list)).size()<list.size()) {
+                if (list.get(0).equals("send") && collapseMessageInList(new ArrayList<String>(list)) != null) {
                     list = collapseMessageInList(new ArrayList<String>(list));
                     if (list.size() == 2) {
                         // "send 'message'"
@@ -197,7 +197,7 @@ public class SimpleShell {
             }
         }
         if (firstApostropheTerm < 0 || secondApostropheTerm < 0 || secondApostropheTerm < firstApostropheTerm) {
-            return list;
+            return null; // malformed command
         }
 
         String message = String.join(" ",list.subList(firstApostropheTerm,secondApostropheTerm+1));

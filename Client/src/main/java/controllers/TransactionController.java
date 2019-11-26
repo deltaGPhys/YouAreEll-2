@@ -55,21 +55,12 @@ public class TransactionController {
     public String get(String url) throws IOException {
         HttpGet httpGet = new HttpGet(this.rootURL + url);
         CloseableHttpResponse response1 = this.httpclient.execute(httpGet);
-        // The underlying HTTP connection is still held by the response object
-        // to allow the response content to be streamed directly from the network socket.
-        // In order to ensure correct deallocation of system resources
-        // the user MUST call CloseableHttpResponse#close() from a finally clause.
-        // Please note that if response content is not fully consumed the underlying
-        // connection cannot be safely re-used and will be shut down and discarded
-        // by the connection manager.
+
         try {
-            //System.out.println(response1.getStatusLine());
             HttpEntity entity1 = response1.getEntity();
             String response = entity1.getContent().toString();
             String result = new BufferedReader(new InputStreamReader(entity1.getContent()))
                     .lines().collect(Collectors.joining("\n"));
-//            System.out.println(result);
-//            System.out.println(response);
 
             EntityUtils.consume(entity1);
             return result;
