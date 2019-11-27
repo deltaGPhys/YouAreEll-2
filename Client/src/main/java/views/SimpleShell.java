@@ -58,7 +58,7 @@ public class SimpleShell {
 
             }
             System.out.println(list); //***check to see if list was added correctly***
-            history.addAll(list);
+            history.add(String.join(" ",list.toArray(new String[0])));
             try {
                 //display history of shell with index
                 if (list.get(list.size() - 1).equals("history")) {
@@ -79,7 +79,7 @@ public class SimpleShell {
 
                     } else {
 
-                        if (list.size() == 3 && list.get(1).equals("setCurrent")) {
+                        if (list.size() == 3 && list.get(1).equalsIgnoreCase("setCurrent")) {
                             // set current user for msgController
                             System.out.println(webber.setMyId(list.get(2)));
                         } else if (list.size() == 3) {
@@ -136,12 +136,21 @@ public class SimpleShell {
                     continue;
                 }
                 //!! command returns the last command in history
-                if (list.get(list.size() - 1).equals("!!")) {
-                    pb.command(history.get(history.size() - 2));
+                if (list.get(0).equals("!!")) {
+                    System.out.println(history.get(history.size() - 2));
+                    System.out.println(list);
+                    list.clear();
+                    System.out.println(list);
+                    String[] comm = history.get(history.size() - 2).split(" ");
+                    for (int i = 0; i < comm.length; i++) {
+                        list.add(comm[i]);
+                    }
+                    System.out.println(list);
+                    pb.command(list);
 
                 }//!<integer value i> command
-                else if (list.get(list.size() - 1).charAt(0) == '!') {
-                    int b = Character.getNumericValue(list.get(list.size() - 1).charAt(1));
+                else if (list.get(0).matches("^[!\\d+]$")) {
+                    int b = Integer.parseInt(list.get(0).substring(1));
                     if (b <= history.size())//check if integer entered isn't bigger than history size
                         pb.command(history.get(b));
                 } else {
