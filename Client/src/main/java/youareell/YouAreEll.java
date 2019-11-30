@@ -7,6 +7,7 @@ import views.IdTextView;
 import views.MessageTextView;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class YouAreEll {
 
@@ -43,7 +44,7 @@ public class YouAreEll {
     }
 
     public String view_all_ids() throws JsonProcessingException {
-        return idCtrl.printIds(idCtrl.getIds());
+        return IdTextView.printIds(idCtrl.getIds());
     }
 
     public void putOrPostId(String name, String gHname) throws JsonProcessingException {

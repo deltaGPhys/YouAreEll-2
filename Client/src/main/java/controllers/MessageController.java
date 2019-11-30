@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashSet;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import models.Id;
 import models.Message;
@@ -67,11 +68,7 @@ public class MessageController {
 
         String result = transactionController.MakeURLCall("/messages", "GET", "");
         ObjectMapper mapper = new ObjectMapper();
-        Message[] messages = mapper.readValue(result,Message[].class);
-
-        for (Message message : messages) {
-            this.allMessages.add(message);
-        }
+        this.allMessages = mapper.readValue(result, new TypeReference<ArrayList<Message>>() {});
 
         return this.allMessages;
     }

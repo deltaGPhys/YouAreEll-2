@@ -2,6 +2,7 @@ package controllers;
 
 import java.util.ArrayList;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import models.Id;
 import views.IdTextView;
@@ -22,12 +23,8 @@ public class IdController {
     public ArrayList<Id> getIds() throws JsonProcessingException {
         String result = transactionController.MakeURLCall("/ids", "GET", "");
         ObjectMapper mapper = new ObjectMapper();
-        this.storedIds.clear();
-        Id[] ids = mapper.readValue(result, Id[].class);
-        for (Id id : ids) {
-            this.storedIds.add(id);
-        }
-        return new ArrayList<Id>(this.storedIds);
+        this.storedIds = mapper.readValue(result, new TypeReference<ArrayList<Id>>() {});
+        return this.storedIds;
     }
 
     public String printIds(ArrayList<Id> ids) {

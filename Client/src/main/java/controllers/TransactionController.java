@@ -58,7 +58,6 @@ public class TransactionController {
 
         try {
             HttpEntity entity1 = response1.getEntity();
-            String response = entity1.getContent().toString();
             String result = new BufferedReader(new InputStreamReader(entity1.getContent()))
                     .lines().collect(Collectors.joining("\n"));
 
